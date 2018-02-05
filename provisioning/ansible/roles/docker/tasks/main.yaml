@@ -1,0 +1,62 @@
+---
+- name: install yum utils
+  package:
+    name: yum-utils
+    state: latest
+  tags: docker
+
+- name: install persistent data device mapper
+  package: 
+    name: device-mapper-persistent-data
+    state: latest
+  tags: docker
+
+- name: install lvm2
+  package: 
+    name: lvm2
+    state: latest
+  tags: docker
+
+- name: add docker gpg key
+  rpm_key:
+    key: https://download.docker.com/linux/centos/gpg
+    state: present
+  tags: docker
+
+- name: add docker repository
+  get_url:
+    url: "https://download.docker.com/linux/centos/docker-ce.repo"
+    dest: '/etc/yum.repos.d/docker-ce.repo'
+    owner: root
+    group: root
+    mode: 0644
+  tags: docker
+
+- name: configure docker edge repository
+  ini_file:
+    dest: '/etc/yum.repos.d/docker-ce.repo'
+    section: 'docker-ce-edge'
+    option: enabled
+    value: '0'
+  tags: docker
+
+- name: configure docker test repository
+  ini_file:
+    dest: '/etc/yum.repos.d/docker-ce.repo'
+    section: 'docker-ce-test'
+    option: enabled
+    value: '0'
+  tags: docker
+
+- name: install docker
+  package:
+    name: docker-ce
+    state: present
+  tags: docker
+
+- name: Make sure Docker is running
+  service: 
+    name: docker 
+    state: started
+    enabled: yes
+  tags: docker
